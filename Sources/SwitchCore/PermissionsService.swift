@@ -6,6 +6,10 @@ public final class PermissionsService: @unchecked Sendable {
     public init() {}
 
     public func isAccessibilityTrusted(prompt: Bool) -> Bool {
+        guard prompt else {
+            return AXIsProcessTrusted()
+        }
+
         let promptKey = unsafeBitCast(kAXTrustedCheckOptionPrompt, to: CFString.self) as String
         let options = [promptKey: prompt] as CFDictionary
         return AXIsProcessTrustedWithOptions(options)
