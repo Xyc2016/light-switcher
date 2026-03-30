@@ -60,11 +60,11 @@ public final class HotkeyService: @unchecked Sendable {
             return
         }
 
-        var hotKeyID = EventHotKeyID(signature: fourCharCode(from: "LTSW"), id: 1)
+        let hotKeyID = EventHotKeyID(signature: fourCharCode(from: "LTSW"), id: 1)
         RegisterEventHotKey(
             configuration.keyCode,
             configuration.carbonModifiers,
-            &hotKeyID,
+            hotKeyID,
             GetApplicationEventTarget(),
             0,
             &hotKeyRef
