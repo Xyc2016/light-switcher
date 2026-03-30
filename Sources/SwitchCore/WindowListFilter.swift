@@ -2,6 +2,15 @@ import CoreGraphics
 import Foundation
 
 public enum WindowListFilter {
+    private static let excludedOwners: Set<String> = [
+        "Control Center",
+        "Dock",
+        "Notification Center",
+        "SystemUIServer",
+        "universalAccessAuthWarn",
+        "Window Server",
+    ]
+
     public static func filter(records: [WindowRecord], excludingPID: pid_t) -> [WindowSnapshot] {
         var seen = Set<CGWindowID>()
 
@@ -10,13 +19,16 @@ public enum WindowListFilter {
                 let windowID = record.windowID,
                 let pid = record.ownerPID,
                 let appName = trimmed(record.ownerName),
-                let title = trimmed(record.title),
                 let bounds = record.bounds
             else {
                 return nil
             }
 
             guard pid != excludingPID else {
+                return nil
+            }
+
+            guard !excludedOwners.contains(appName) else {
                 return nil
             }
 
@@ -39,6 +51,8 @@ public enum WindowListFilter {
             guard seen.insert(windowID).inserted else {
                 return nil
             }
+
+            let title = trimmed(record.title) ?? appName
 
             return WindowSnapshot(
                 windowID: windowID,

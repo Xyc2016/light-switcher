@@ -109,7 +109,7 @@ public final class SwitcherPanelController: NSWindowController {
             row.configure(
                 icon: iconCache.icon(for: snapshot.pid),
                 title: snapshot.title,
-                subtitle: snapshot.appName
+                subtitle: snapshot.title == snapshot.appName ? "" : snapshot.appName
             )
             row.isHighlighted = index == currentSelection
             stackView.addArrangedSubview(row)
@@ -169,6 +169,7 @@ private final class WindowRowView: NSView {
         iconView.image = icon
         titleLabel.stringValue = title
         subtitleLabel.stringValue = subtitle
+        subtitleLabel.isHidden = subtitle.isEmpty
     }
 
     override func draw(_ dirtyRect: NSRect) {
