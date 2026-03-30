@@ -7,6 +7,9 @@ let package = Package(
     platforms: [
         .macOS(.v13),
     ],
+    swiftLanguageVersions: [
+        .v5,
+    ],
     products: [
         .library(
             name: "SwitchCore",
