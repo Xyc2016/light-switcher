@@ -49,9 +49,8 @@ final class WindowListFilterTests: XCTestCase {
 
         let snapshots = WindowListFilter.filter(records: records, excludingPID: 999)
 
-        XCTAssertEqual(snapshots.count, 1)
-        XCTAssertEqual(snapshots.first?.windowID, 1)
-        XCTAssertEqual(snapshots.first?.title, "GitHub")
+        XCTAssertEqual(snapshots.map(\.windowID), [1, 2])
+        XCTAssertEqual(snapshots.map(\.title), ["GitHub", "Safari"])
     }
 
     func testRemovesOwnProcessAndDuplicateWindowIDs() {
