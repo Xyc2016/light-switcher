@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Swift tests
+        run: swift test
+
+      - name: Build app
+        run: >
+          xcodebuild
+          -project LightSwitcher.xcodeproj
+          -scheme LightSwitcher
+          -configuration Debug
+          CODE_SIGNING_ALLOWED=NO
+          build
