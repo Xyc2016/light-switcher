@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var activeSnapshots: [WindowSnapshot] = []
     private var selectedIndex = 0
     private var isCycling = false
+    private var isPresentingAccessibilityPrompt = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -90,6 +91,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func promptForAccessibility() {
+        guard !isPresentingAccessibilityPrompt else {
+            return
+        }
+
+        isPresentingAccessibilityPrompt = true
         _ = permissionsService.isAccessibilityTrusted(prompt: true)
 
         NSApp.activate(ignoringOtherApps: true)
@@ -102,6 +108,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if alert.runModal() == .alertFirstButtonReturn {
             permissionsService.openAccessibilitySettings()
         }
+
+        isPresentingAccessibilityPrompt = false
     }
 
     private func setupStatusItem() {
