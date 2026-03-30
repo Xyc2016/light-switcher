@@ -19,6 +19,7 @@
 		00100000000000000000000A /* SwitcherPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00100000000000000000001A /* SwitcherPanelController.swift */; };
 		00100000000000000000000B /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001000000000000000000021 /* AppKit.framework */; };
 		00100000000000000000000C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001000000000000000000022 /* Carbon.framework */; };
+		00100000000000000000000D /* WindowTitleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00100000000000000000001C /* WindowTitleResolver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		001000000000000000000019 /* HotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyService.swift; sourceTree = "<group>"; };
 		00100000000000000000001A /* SwitcherPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitcherPanelController.swift; sourceTree = "<group>"; };
 		00100000000000000000001B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		00100000000000000000001C /* WindowTitleResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowTitleResolver.swift; sourceTree = "<group>"; };
 		001000000000000000000021 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		001000000000000000000022 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -107,6 +109,7 @@
 				001000000000000000000018 /* WindowSwitchService.swift */,
 				001000000000000000000019 /* HotkeyService.swift */,
 				00100000000000000000001A /* SwitcherPanelController.swift */,
+				00100000000000000000001C /* WindowTitleResolver.swift */,
 			);
 			path = SwitchCore;
 			sourceTree = "<group>";
@@ -189,6 +192,7 @@
 				001000000000000000000008 /* WindowSwitchService.swift in Sources */,
 				001000000000000000000009 /* HotkeyService.swift in Sources */,
 				00100000000000000000000A /* SwitcherPanelController.swift in Sources */,
+				00100000000000000000000D /* WindowTitleResolver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
