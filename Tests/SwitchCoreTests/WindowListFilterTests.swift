@@ -22,7 +22,7 @@ final class WindowListFilterTests: XCTestCase {
                 title: "",
                 layer: 0,
                 alpha: 1,
-                bounds: CGRect(x: 0, y: 0, width: 800, height: 600),
+                bounds: CGRect(x: 30, y: 20, width: 720, height: 520),
                 isOnscreen: true
             ),
             WindowRecord(
