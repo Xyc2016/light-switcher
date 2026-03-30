@@ -7,9 +7,6 @@ let package = Package(
     platforms: [
         .macOS(.v13),
     ],
-    swiftLanguageModes: [
-        .v5,
-    ],
     products: [
         .library(
             name: "SwitchCore",
@@ -32,5 +29,8 @@ let package = Package(
             name: "SwitchCoreTests",
             dependencies: ["SwitchCore"]
         ),
+    ],
+    swiftLanguageModes: [
+        .v5,
     ]
 )
