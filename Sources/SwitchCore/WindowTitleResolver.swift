@@ -32,13 +32,14 @@ public final class WindowTitleResolver: WindowTitleResolving, @unchecked Sendabl
                 continue
             }
 
-            for index in indices {
-                let snapshot = enrichedSnapshots[index]
-                guard let resolvedTitle = bestTitle(for: snapshot, candidates: candidates) else {
-                    continue
-                }
+            let assignments = resolveTitles(
+                for: indices.map { enrichedSnapshots[$0] },
+                candidates: candidates
+            )
 
-                enrichedSnapshots[index] = snapshot.withResolvedTitle(resolvedTitle)
+            for (snapshotIndex, resolvedTitle) in assignments {
+                let originalIndex = indices[snapshotIndex]
+                enrichedSnapshots[originalIndex] = enrichedSnapshots[originalIndex].withResolvedTitle(resolvedTitle)
             }
         }
 
@@ -68,20 +69,59 @@ public final class WindowTitleResolver: WindowTitleResolving, @unchecked Sendabl
         return WindowCandidate(title: title, frame: copyFrame(window))
     }
 
-    private func bestTitle(for snapshot: WindowSnapshot, candidates: [WindowCandidate]) -> String? {
-        let bestCandidate = candidates
-            .map { candidate in (candidate, score(candidate: candidate, snapshot: snapshot)) }
-            .max { $0.1 < $1.1 }
-
-        if let bestCandidate, bestCandidate.1 > 0 {
-            return bestCandidate.0.title
+    private func resolveTitles(
+        for snapshots: [WindowSnapshot],
+        candidates: [WindowCandidate]
+    ) -> [Int: String] {
+        if snapshots.count == 1, candidates.count == 1 {
+            return [0: candidates[0].title]
         }
 
-        if candidates.count == 1 {
-            return candidates[0].title
+        let matches = snapshots.enumerated().flatMap { snapshotEntry -> [TitleMatch] in
+            let (snapshotIndex, snapshot) = snapshotEntry
+
+            return candidates.enumerated().compactMap { candidateEntry -> TitleMatch? in
+                let (candidateIndex, candidate) = candidateEntry
+                let matchScore = score(candidate: candidate, snapshot: snapshot)
+                guard matchScore > 0 else {
+                    return nil
+                }
+
+                return TitleMatch(
+                    snapshotIndex: snapshotIndex,
+                    candidateIndex: candidateIndex,
+                    score: matchScore
+                )
+            }
+        }
+        .sorted {
+            if $0.score != $1.score {
+                return $0.score > $1.score
+            }
+
+            if $0.snapshotIndex != $1.snapshotIndex {
+                return $0.snapshotIndex < $1.snapshotIndex
+            }
+
+            return $0.candidateIndex < $1.candidateIndex
         }
 
-        return nil
+        var assignedSnapshots = Set<Int>()
+        var usedCandidates = Set<Int>()
+        var resolvedTitles: [Int: String] = [:]
+
+        for match in matches {
+            guard
+                assignedSnapshots.insert(match.snapshotIndex).inserted,
+                usedCandidates.insert(match.candidateIndex).inserted
+            else {
+                continue
+            }
+
+            resolvedTitles[match.snapshotIndex] = candidates[match.candidateIndex].title
+        }
+
+        return resolvedTitles
     }
 
     private func score(candidate: WindowCandidate, snapshot: WindowSnapshot) -> Int {
@@ -177,4 +217,10 @@ public final class WindowTitleResolver: WindowTitleResolving, @unchecked Sendabl
 private struct WindowCandidate {
     let title: String
     let frame: CGRect?
+}
+
+private struct TitleMatch {
+    let snapshotIndex: Int
+    let candidateIndex: Int
+    let score: Int
 }

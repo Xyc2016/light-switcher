@@ -105,11 +105,10 @@ public final class SwitcherPanelController: NSWindowController {
         rowViews = snapshots.enumerated().map { index, snapshot in
             let row = WindowRowView(frame: .zero)
             row.translatesAutoresizingMaskIntoConstraints = false
-            row.heightAnchor.constraint(equalToConstant: 34).isActive = true
+            row.heightAnchor.constraint(equalToConstant: 32).isActive = true
             row.configure(
                 icon: iconCache.icon(for: snapshot.pid),
-                title: snapshot.title,
-                subtitle: snapshot.title == snapshot.appName ? "" : snapshot.appName
+                title: displayTitle(for: snapshot)
             )
             row.isHighlighted = index == currentSelection
             stackView.addArrangedSubview(row)
@@ -124,7 +123,7 @@ public final class SwitcherPanelController: NSWindowController {
 
         let visibleRows = max(1, min(snapshots.count, 8))
         let height = CGFloat(visibleRows * 42) + 28
-        let width = max(380, min(640, snapshots.map { CGFloat($0.title.count) * 7 + 160 }.max() ?? 420))
+        let width = max(560, min(860, snapshots.map { CGFloat(displayTitle(for: $0).count) * 7 + 120 }.max() ?? 620))
         window.setContentSize(NSSize(width: width, height: height))
     }
 
@@ -140,18 +139,24 @@ public final class SwitcherPanelController: NSWindowController {
         )
         window.setFrameOrigin(origin)
     }
+
+    private func displayTitle(for snapshot: WindowSnapshot) -> String {
+        if snapshot.title == snapshot.appName {
+            return snapshot.appName
+        }
+
+        return "\(snapshot.appName) - \(snapshot.title)"
+    }
 }
 
 private final class WindowRowView: NSView {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
-    private let subtitleLabel = NSTextField(labelWithString: "")
 
     var isHighlighted: Bool = false {
         didSet {
             needsDisplay = true
             titleLabel.textColor = isHighlighted ? .white : NSColor(calibratedWhite: 0.95, alpha: 1)
-            subtitleLabel.textColor = isHighlighted ? NSColor.white.withAlphaComponent(0.82) : NSColor(calibratedWhite: 0.75, alpha: 1)
         }
     }
 
@@ -165,11 +170,9 @@ private final class WindowRowView: NSView {
         nil
     }
 
-    func configure(icon: NSImage, title: String, subtitle: String) {
+    func configure(icon: NSImage, title: String) {
         iconView.image = icon
         titleLabel.stringValue = title
-        subtitleLabel.stringValue = subtitle
-        subtitleLabel.isHidden = subtitle.isEmpty
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -188,27 +191,22 @@ private final class WindowRowView: NSView {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = NSFont.systemFont(ofSize: 14, weight: .semibold)
         titleLabel.lineBreakMode = .byTruncatingTail
-
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        subtitleLabel.font = NSFont.systemFont(ofSize: 11, weight: .regular)
-        subtitleLabel.lineBreakMode = .byTruncatingTail
-
-        let textStack = NSStackView(views: [titleLabel, subtitleLabel])
-        textStack.orientation = .vertical
-        textStack.spacing = 1
-        textStack.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.maximumNumberOfLines = 1
+        titleLabel.cell?.wraps = false
+        titleLabel.cell?.isScrollable = true
+        titleLabel.cell?.truncatesLastVisibleLine = true
 
         addSubview(iconView)
-        addSubview(textStack)
+        addSubview(titleLabel)
 
         NSLayoutConstraint.activate([
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             iconView.centerYAnchor.constraint(equalTo: centerYAnchor),
             iconView.widthAnchor.constraint(equalToConstant: 18),
             iconView.heightAnchor.constraint(equalToConstant: 18),
-            textStack.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10),
-            textStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
-            textStack.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 }

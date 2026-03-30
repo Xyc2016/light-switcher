@@ -141,4 +141,45 @@ final class WindowListFilterTests: XCTestCase {
         XCTAssertEqual(snapshots.map(\.windowID), [12])
         XCTAssertEqual(snapshots.first?.title, "iTerm2")
     }
+
+    func testDeduplicatesSameAppSurfacesWithMatchingBounds() {
+        let records = [
+            WindowRecord(
+                windowID: 21,
+                ownerPID: 999,
+                ownerName: "Google Chrome",
+                title: nil,
+                layer: 0,
+                alpha: 1,
+                bounds: CGRect(x: 40, y: 50, width: 1280, height: 820),
+                isOnscreen: true
+            ),
+            WindowRecord(
+                windowID: 22,
+                ownerPID: 999,
+                ownerName: "Google Chrome",
+                title: nil,
+                layer: 0,
+                alpha: 1,
+                bounds: CGRect(x: 44, y: 54, width: 1280, height: 820),
+                isOnscreen: true
+            ),
+            WindowRecord(
+                windowID: 23,
+                ownerPID: 999,
+                ownerName: "Google Chrome",
+                title: "Docs",
+                layer: 0,
+                alpha: 1,
+                bounds: CGRect(x: 42, y: 48, width: 1280, height: 820),
+                isOnscreen: true
+            ),
+        ]
+
+        let snapshots = WindowListFilter.filter(records: records, excludingPID: 123)
+
+        XCTAssertEqual(snapshots.count, 1)
+        XCTAssertEqual(snapshots.first?.windowID, 23)
+        XCTAssertEqual(snapshots.first?.title, "Docs")
+    }
 }

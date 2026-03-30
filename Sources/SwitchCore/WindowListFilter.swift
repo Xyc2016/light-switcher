@@ -13,57 +13,70 @@ public enum WindowListFilter {
 
     public static func filter(records: [WindowRecord], excludingPID: pid_t) -> [WindowSnapshot] {
         var seen = Set<CGWindowID>()
+        var snapshots: [WindowSnapshot] = []
 
-        return records.compactMap { record in
+        for record in records {
             guard
                 let windowID = record.windowID,
                 let pid = record.ownerPID,
                 let appName = trimmed(record.ownerName),
                 let bounds = record.bounds
             else {
-                return nil
+                continue
             }
 
             guard pid != excludingPID else {
-                return nil
+                continue
             }
 
             guard !excludedOwners.contains(appName) else {
-                return nil
+                continue
             }
 
             guard record.layer == 0 else {
-                return nil
+                continue
             }
 
             if let isOnscreen = record.isOnscreen, !isOnscreen {
-                return nil
+                continue
             }
 
             if let alpha = record.alpha, alpha <= 0 {
-                return nil
+                continue
             }
 
             guard bounds.width > 1, bounds.height > 1 else {
-                return nil
+                continue
             }
 
             guard seen.insert(windowID).inserted else {
-                return nil
+                continue
             }
 
             let exactTitle = trimmed(record.title)
-            let title = exactTitle ?? appName
-
-            return WindowSnapshot(
+            let snapshot = WindowSnapshot(
                 windowID: windowID,
                 pid: pid,
                 appName: appName,
-                title: title,
+                title: exactTitle ?? appName,
                 bounds: bounds,
                 hasExactTitle: exactTitle != nil
             )
+
+            if let duplicateIndex = snapshots.firstIndex(where: {
+                $0.pid == snapshot.pid && approximatelyEqual($0.bounds, snapshot.bounds)
+            }) {
+                if snapshot.hasExactTitle && !snapshots[duplicateIndex].hasExactTitle {
+                    snapshots[duplicateIndex] = snapshot
+                }
+
+                continue
+            }
+
+            snapshots.append(snapshot)
         }
+
+        return snapshots
     }
 
     private static func trimmed(_ value: String?) -> String? {
@@ -73,5 +86,12 @@ public enum WindowListFilter {
 
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmedValue.isEmpty ? nil : trimmedValue
+    }
+
+    private static func approximatelyEqual(_ lhs: CGRect, _ rhs: CGRect, tolerance: CGFloat = 12) -> Bool {
+        abs(lhs.origin.x - rhs.origin.x) <= tolerance &&
+            abs(lhs.origin.y - rhs.origin.y) <= tolerance &&
+            abs(lhs.size.width - rhs.size.width) <= tolerance &&
+            abs(lhs.size.height - rhs.size.height) <= tolerance
     }
 }
