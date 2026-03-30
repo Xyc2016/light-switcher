@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import UniformTypeIdentifiers
 
 public final class AppIconCache: @unchecked Sendable {
     private let cache = NSCache<NSNumber, NSImage>()
@@ -14,7 +15,8 @@ public final class AppIconCache: @unchecked Sendable {
             return cached
         }
 
-        let icon = NSRunningApplication(processIdentifier: pid)?.icon ?? NSWorkspace.shared.icon(forFileType: "app")
+        let icon = NSRunningApplication(processIdentifier: pid)?.icon
+            ?? NSWorkspace.shared.icon(forContentType: .applicationBundle)
         icon.size = NSSize(width: 18, height: 18)
         cache.setObject(icon, forKey: key)
         return icon

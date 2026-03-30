@@ -119,7 +119,16 @@ public final class WindowSwitchService: @unchecked Sendable {
     private func copyAXValue(_ window: AXUIElement, attribute: String, type: AXValueType) -> AXValue? {
         var value: CFTypeRef?
         let result = AXUIElementCopyAttributeValue(window, attribute as CFString, &value)
-        guard result == .success, let axValue = value as? AXValue, AXValueGetType(axValue) == type else {
+        guard result == .success, let value else {
+            return nil
+        }
+
+        guard CFGetTypeID(value) == AXValueGetTypeID() else {
+            return nil
+        }
+
+        let axValue = unsafeBitCast(value, to: AXValue.self)
+        guard AXValueGetType(axValue) == type else {
             return nil
         }
 
