@@ -6,7 +6,11 @@ public protocol WindowQuerying: Sendable {
 }
 
 public final class WindowQueryService: WindowQuerying, @unchecked Sendable {
-    public init() {}
+    private let titleResolver: any WindowTitleResolving
+
+    public init(titleResolver: any WindowTitleResolving) {
+        self.titleResolver = titleResolver
+    }
 
     public func snapshotVisibleWindows(excludingPID: pid_t) -> [WindowSnapshot] {
         guard
@@ -17,7 +21,8 @@ public final class WindowQueryService: WindowQuerying, @unchecked Sendable {
         }
 
         let records = infoList.map(Self.makeRecord)
-        return WindowListFilter.filter(records: records, excludingPID: excludingPID)
+        let snapshots = WindowListFilter.filter(records: records, excludingPID: excludingPID)
+        return titleResolver.enrichTitles(in: snapshots)
     }
 
     private static func makeRecord(dictionary: [CFString: Any]) -> WindowRecord {

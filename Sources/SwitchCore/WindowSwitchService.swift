@@ -60,7 +60,10 @@ public final class WindowSwitchService: @unchecked Sendable {
 
         var score = 0
 
-        if let title = copyString(window, attribute: kAXTitleAttribute), title == snapshot.title {
+        if snapshot.hasExactTitle,
+            let title = copyString(window, attribute: kAXTitleAttribute),
+            title == snapshot.title
+        {
             score += 100
         }
 

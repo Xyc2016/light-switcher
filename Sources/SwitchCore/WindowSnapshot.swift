@@ -7,13 +7,33 @@ public struct WindowSnapshot: Equatable, Sendable {
     public let appName: String
     public let title: String
     public let bounds: CGRect
+    public let hasExactTitle: Bool
 
-    public init(windowID: CGWindowID, pid: pid_t, appName: String, title: String, bounds: CGRect) {
+    public init(
+        windowID: CGWindowID,
+        pid: pid_t,
+        appName: String,
+        title: String,
+        bounds: CGRect,
+        hasExactTitle: Bool
+    ) {
         self.windowID = windowID
         self.pid = pid
         self.appName = appName
         self.title = title
         self.bounds = bounds
+        self.hasExactTitle = hasExactTitle
+    }
+
+    public func withResolvedTitle(_ resolvedTitle: String) -> WindowSnapshot {
+        WindowSnapshot(
+            windowID: windowID,
+            pid: pid,
+            appName: appName,
+            title: resolvedTitle,
+            bounds: bounds,
+            hasExactTitle: true
+        )
     }
 }
 

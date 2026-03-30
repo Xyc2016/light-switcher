@@ -8,7 +8,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let iconCache = AppIconCache()
     private lazy var panelController = SwitcherPanelController(iconCache: iconCache)
     private lazy var switchService = WindowSwitchService(permissionsService: permissionsService)
-    private let windowQueryService: any WindowQuerying = WindowQueryService()
+    private lazy var windowQueryService: any WindowQuerying = WindowQueryService(
+        titleResolver: WindowTitleResolver(permissionsService: permissionsService)
+    )
     private let hotkeyService = HotkeyService()
 
     private var statusItem: NSStatusItem?

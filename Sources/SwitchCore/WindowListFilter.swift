@@ -52,14 +52,16 @@ public enum WindowListFilter {
                 return nil
             }
 
-            let title = trimmed(record.title) ?? appName
+            let exactTitle = trimmed(record.title)
+            let title = exactTitle ?? appName
 
             return WindowSnapshot(
                 windowID: windowID,
                 pid: pid,
                 appName: appName,
                 title: title,
-                bounds: bounds
+                bounds: bounds,
+                hasExactTitle: exactTitle != nil
             )
         }
     }

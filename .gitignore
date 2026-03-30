@@ -3,3 +3,5 @@
 DerivedData
 *.xcuserdatad
 *.xcuserstate
+.artifacts
+.signing
