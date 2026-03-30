@@ -7,7 +7,7 @@ let package = Package(
     platforms: [
         .macOS(.v13),
     ],
-    swiftLanguageVersions: [
+    swiftLanguageModes: [
         .v5,
     ],
     products: [
