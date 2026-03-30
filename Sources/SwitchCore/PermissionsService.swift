@@ -1,4 +1,4 @@
-import ApplicationServices
+@preconcurrency import ApplicationServices
 import AppKit
 import Foundation
 
@@ -6,7 +6,8 @@ public final class PermissionsService: @unchecked Sendable {
     public init() {}
 
     public func isAccessibilityTrusted(prompt: Bool) -> Bool {
-        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: prompt] as CFDictionary
+        let promptKey = unsafeBitCast(kAXTrustedCheckOptionPrompt, to: CFString.self) as String
+        let options = [promptKey: prompt] as CFDictionary
         return AXIsProcessTrustedWithOptions(options)
     }
 
