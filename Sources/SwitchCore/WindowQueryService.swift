@@ -22,8 +22,8 @@ public final class WindowQueryService: WindowQuerying, @unchecked Sendable {
 
     private static func makeRecord(dictionary: [CFString: Any]) -> WindowRecord {
         let bounds: CGRect?
-        if let boundsDict = dictionary[kCGWindowBounds] as? CFDictionary {
-            bounds = CGRect(dictionaryRepresentation: boundsDict)
+        if let rawBounds = dictionary[kCGWindowBounds] {
+            bounds = CGRect(dictionaryRepresentation: rawBounds as! CFDictionary)
         } else {
             bounds = nil
         }

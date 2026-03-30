@@ -127,7 +127,10 @@ public final class WindowSwitchService: @unchecked Sendable {
     }
 
     private func focus(window: AXUIElement) {
-        let trueValue = kCFBooleanTrue
+        guard let trueValue = kCFBooleanTrue else {
+            return
+        }
+
         AXUIElementSetAttributeValue(window, kAXMainAttribute as CFString, trueValue)
         AXUIElementSetAttributeValue(window, kAXFocusedAttribute as CFString, trueValue)
         AXUIElementPerformAction(window, kAXRaiseAction as CFString)
